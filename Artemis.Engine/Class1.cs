@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Artemis.Engine
 {
-    class Test1
+    class Class1
     {
     }
 }
