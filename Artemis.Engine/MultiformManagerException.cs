@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Artemis.Engine
 {
+    /// <summary>
+    /// An exception that occurs when something goes wrong in the MultiformManager.
+    /// </summary>
     public class MultiformManagerException : Exception
     {
         public MultiformManagerException() : base() { }

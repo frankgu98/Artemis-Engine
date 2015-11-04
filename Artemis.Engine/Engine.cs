@@ -4,6 +4,9 @@ using System;
 
 namespace Artemis.Engine
 {
+    /// <summary>
+    /// The main Engine class, from which the game is setup and run.
+    /// </summary>
     public sealed class Engine : Game
     {
         

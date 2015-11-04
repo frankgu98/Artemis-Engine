@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Artemis.Engine
 {
+    /// <summary>
+    /// A class that records currently registered and active multiforms and controls
+    /// updating them, rendering them, and other actions.
+    /// </summary>
     public sealed class MultiformManager
     {
 

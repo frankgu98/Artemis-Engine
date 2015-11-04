@@ -8,7 +8,7 @@ namespace Artemis.Engine
 {
 
     /// <summary>
-    /// 
+    /// A reader for the GameProperties.
     /// </summary>
     internal class GameSetupReader
     {

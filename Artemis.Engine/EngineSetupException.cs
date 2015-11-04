@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Artemis.Engine
 {
+    /// <summary>
+    /// An exception thrown when something goes wrong in the engine setup.
+    /// </summary>
     public class EngineSetupException : Exception
     {
         public EngineSetupException() : base() { }
