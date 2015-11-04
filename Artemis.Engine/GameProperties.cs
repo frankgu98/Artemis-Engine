@@ -1,4 +1,5 @@
-﻿
+﻿using Microsoft.Xna.Framework;
+
 namespace Artemis.Engine
 {
     public class GameProperties
@@ -14,6 +15,8 @@ namespace Artemis.Engine
         internal static readonly bool DEFAULT_BORDERLESS = false;
         internal static readonly bool DEFAULT_BORDER_TOGGLABLE = false;
         internal static readonly bool DEFAULT_VSYNC = false;
+        internal static readonly Color DEFAULT_BG_COLOUR = Color.Black;
+        internal static readonly string DEFAULT_CONTENT_FOLDER = "Content";
 
         #endregion
 
@@ -63,6 +66,16 @@ namespace Artemis.Engine
         /// </summary>
         public bool VSync { get; internal set; }
 
+        /// <summary>
+        /// The background colour.
+        /// </summary>
+        public Color BackgroundColour { get; internal set; }
+
+        /// <summary>
+        /// The content folder name.
+        /// </summary>
+        public string ContentFolder { get; internal set; }
+
         internal GameProperties()
         {
             // Setup default values.
@@ -74,6 +87,8 @@ namespace Artemis.Engine
             Borderless               = DEFAULT_BORDERLESS;
             BorderTogglable          = DEFAULT_BORDER_TOGGLABLE;
             VSync                    = DEFAULT_VSYNC;
+            BackgroundColour         = DEFAULT_BG_COLOUR;
+            ContentFolder            = DEFAULT_CONTENT_FOLDER;
         }
 
     }

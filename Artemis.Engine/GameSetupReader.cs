@@ -28,6 +28,8 @@ namespace Artemis.Engine
         private const string BORDER_TOGGLABLE_ELEMENT = "BorderTogglable";
         private const string WINDOW_TITLE_ELEMENT = "WindowTitle";
         private const string VSYNC_ELEMENT = "VSync";
+        private const string BG_COLOUR_ELEMENT = "BackgroundColour";
+        private const string CONTENT_FOLDER_ELEMENT = "ContentFolder";
 
         private const string RESOLUTION_REGEX = @"[0-9]+x[0-9]+$";
         private const string COLOUR_REGEX = @"0(x|X)[0-9a-fA-F]{6}$";
@@ -117,6 +119,12 @@ namespace Artemis.Engine
                     break;
                 case VSYNC_ELEMENT:
                     properties.VSync = ReadBool(element, GameProperties.DEFAULT_VSYNC);
+                    break;
+                case BG_COLOUR_ELEMENT:
+                    properties.BackgroundColour = ReadColour(element, GameProperties.DEFAULT_BG_COLOUR);
+                    break;
+                case CONTENT_FOLDER_ELEMENT:
+                    properties.ContentFolder = element.InnerText;
                     break;
                 default:
                     break;
