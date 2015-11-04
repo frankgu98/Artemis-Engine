@@ -10,7 +10,7 @@ namespace Artemis.Engine
 
     	internal static void Initialize(ContentManager content)
     	{
-    		AssetLoader.Content = content;
+    		Content = content;
     	}
 
     	public static Texture2D Texture(string name)
