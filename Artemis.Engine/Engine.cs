@@ -25,10 +25,12 @@ namespace Artemis.Engine
         private MultiformManager _MultiformManager;
         private GameProperties _GameProperties;
 
-        private Engine() 
+        private Engine(GameProperties properties) 
         {
+            _GameProperties = properties;
+
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = GameSetup.ContentFolder;
+            Content.RootDirectory = properties.ContentFolder;
 
             Initialize();
         }
@@ -42,6 +44,9 @@ namespace Artemis.Engine
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            _RenderPipeline = new RenderPipeline(spriteBatch, GraphicsDevice, graphics);
+            _MultiformManager = new MultiformManager();
         }
 
         /// <summary>
@@ -83,17 +88,6 @@ namespace Artemis.Engine
             RenderPipeline.EndRenderCycle();
 
             base.Draw(gameTime);
-        }
-
-        /// <summary>
-        /// Setup the Engine's global fields.
-        /// </summary>
-        /// <param name="name"></param>
-        private void _Setup(string name)
-        {
-            _GameProperties = new GameSetupReader(name).Read();
-            _RenderPipeline = new RenderPipeline(spriteBatch, GraphicsDevice, graphics);
-            _MultiformManager = new MultiformManager();
         }
 
         /// <summary>
@@ -141,7 +135,12 @@ namespace Artemis.Engine
         /// <summary>
         /// The singleton instance of Engine.
         /// </summary>
-        private static Engine Instance = new Engine();
+        private static Engine Instance;
+
+        /// <summary>
+        /// Whether or not Engine.Setup has been called.
+        /// </summary>
+        public static bool SetupCalled { get { return Instance != null; } }
 
         /// <summary>
         /// The engine's global render pipeline. Controls all rendering that takes
@@ -165,7 +164,11 @@ namespace Artemis.Engine
         /// <param name="name"></param>
         public static void Setup(string name)
         {
-            Instance._Setup(name);
+            if (SetupCalled)
+            {
+                throw new EngineSetupException("Engine.Setup called multiple times.");
+            }
+            Instance = new Engine(new GameSetupReader(name).Read());
         }
 
         /// <summary>
@@ -174,6 +177,11 @@ namespace Artemis.Engine
         /// <param name="multiforms"></param>
         public static void RegisterMultiforms(params Type[] multiforms)
         {
+            if (!SetupCalled)
+            {
+                throw new EngineSetupException(
+                    "Must call Engine.Setup before call to Engine.RegisterMultiforms.");
+            }
             Instance._RegisterMultiforms(multiforms);
         }
 
@@ -183,14 +191,24 @@ namespace Artemis.Engine
         /// <param name="multiform"></param>
         public static void StartWith(Type multiform)
         {
-            Instance.MultiformManager.Construct(multiform);
+            if (!SetupCalled)
+            {
+                throw new EngineSetupException(
+                    "Must call Engine.Setup before call to Engine.StartWith.");
+            }
+            MultiformManager.Construct(multiform);
         }
 
         /// <summary>
         /// Run the game.
         /// </summary>
-        public static void Run()
+        public static void Begin()
         {
+            if (!SetupCalled)
+            {
+                throw new EngineSetupException(
+                    "Must call Engine.Setup before call to Engine.Begin.");
+            }
             Instance.Run();
         }
 
