@@ -98,24 +98,8 @@ namespace Artemis.Engine
         {
             foreach (var multiformType in multiforms)
             {
-                // Get the multiform's name. If the class has a NamedMultiform attribute
-                // applied to it, we use the supplied name. Otherwise, the name is simply
-                // the name of the class.
-                string name;
-                var nameAttrs = Reflection.GetAttributes<NamedMultiform>(multiformType);
-                if (nameAttrs.Count == 0)
-                {
-                    name = multiformType.Name;
-                }
-                else if (nameAttrs.Count == 1)
-                {
-                    name = nameAttrs[0].Name;
-                }
-                else
-                {
-                    throw new MultiformRegistrationException(
-                        "Multiforms cannot have multiple NamedMultiformAttributes.");
-                }
+                // Get the multiform's name.
+                string name = MultiformManager.GetMultiformName(multiformType);
 
                 // Check if it's actually a multiform subtype.
                 if (!multiformType.IsSubclassOf(typeof(Multiform)))
