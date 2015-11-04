@@ -2,6 +2,10 @@
 
 namespace Artemis.Engine
 {
+
+    /// <summary>
+    /// A class representing global game properties.
+    /// </summary>
     public sealed class GameProperties
     {
 
@@ -76,6 +80,8 @@ namespace Artemis.Engine
         /// </summary>
         public string ContentFolder { get; internal set; }
 
+        // Internal because we don't want any little kiddies creating their own instances
+        // of GameProperties and messing things up.
         internal GameProperties()
         {
             // Setup default values.
