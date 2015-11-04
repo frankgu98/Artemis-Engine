@@ -8,15 +8,15 @@ namespace Artemis.Engine
         #region Default Values
 
         internal static readonly Resolution DEFAULT_RESOLUTION = new Resolution(800, 600);
-        internal static readonly bool DEFAULT_FULLSCREEN = false;
-        internal static readonly bool DEFAULT_FULLSCREEN_TOGGLABLE = false;
-        internal static readonly bool DEFAULT_MOUSE_VISIBLE = true;
-        internal static readonly bool DEFAULT_MOUSE_VISIBILITY_TOGGLABLE = false;
-        internal static readonly bool DEFAULT_BORDERLESS = false;
-        internal static readonly bool DEFAULT_BORDER_TOGGLABLE = false;
-        internal static readonly bool DEFAULT_VSYNC = false;
+        internal const bool DEFAULT_FULLSCREEN = false;
+        internal const bool DEFAULT_FULLSCREEN_TOGGLABLE = false;
+        internal const bool DEFAULT_MOUSE_VISIBLE = true;
+        internal const bool DEFAULT_MOUSE_VISIBILITY_TOGGLABLE = false;
+        internal const bool DEFAULT_BORDERLESS = false;
+        internal const bool DEFAULT_BORDER_TOGGLABLE = false;
+        internal const bool DEFAULT_VSYNC = false;
         internal static readonly Color DEFAULT_BG_COLOUR = Color.Black;
-        internal static readonly string DEFAULT_CONTENT_FOLDER = "Content";
+        internal const string DEFAULT_CONTENT_FOLDER = "Content";
 
         #endregion
 

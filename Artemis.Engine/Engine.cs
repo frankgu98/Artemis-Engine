@@ -172,6 +172,45 @@ namespace Artemis.Engine
         }
 
         /// <summary>
+        /// Setup the game's properties using the given setup parameters.
+        /// </summary>
+        public static void Setup(
+            Resolution? baseResolution = null,
+            bool fullscreen = GameProperties.DEFAULT_FULLSCREEN,
+            bool fullscreenTogglable = GameProperties.DEFAULT_FULLSCREEN_TOGGLABLE,
+            bool mouseVisible = GameProperties.DEFAULT_MOUSE_VISIBLE,
+            bool mouseVisibilityTogglable = GameProperties.DEFAULT_MOUSE_VISIBILITY_TOGGLABLE,
+            bool borderless = GameProperties.DEFAULT_BORDERLESS,
+            bool borderTogglable = GameProperties.DEFAULT_BORDER_TOGGLABLE,
+            bool vsync = GameProperties.DEFAULT_VSYNC,
+            Color? bgColour = null,
+            string? windowTitle = null)
+        {
+            var properties = new GameProperties();
+
+            properties.BaseResolution = baseResolution.HasValue ? 
+                baseResolution.Value : GameProperties.DEFAULT_RESOLUTION;
+
+            properties.BackgroundColour = bgColour.HasValue ?
+                bgColour.Value : GameProperties.DEFAULT_BG_COLOUR;
+
+            if (windowTitle.HasValue)
+            {
+                properties.WindowTitle = windowTitle.Value;
+            }
+
+            properties.Fullscreen = fullscreen;
+            properties.FullscreenTogglable = fullscreenTogglable;
+            properties.MouseVisible = mouseVisible;
+            properties.MouseVisibilityTogglable = mouseVisibilityTogglable;
+            properties.Borderless = borderless;
+            properties.BorderTogglable = borderTogglable;
+            properties.VSync = vsync;
+
+            Instance = new Engine(properties);
+        }
+
+        /// <summary>
         /// Register multiforms to the engine.
         /// </summary>
         /// <param name="multiforms"></param>
