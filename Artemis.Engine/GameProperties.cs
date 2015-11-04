@@ -2,7 +2,7 @@
 
 namespace Artemis.Engine
 {
-    public class GameProperties
+    public sealed class GameProperties
     {
 
         #region Default Values

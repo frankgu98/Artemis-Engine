@@ -5,7 +5,7 @@ using System;
 
 namespace Artemis.Engine
 {
-    public class Engine : Game
+    public sealed class Engine : Game
     {
         
         /// <summary>
