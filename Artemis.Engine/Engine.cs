@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Artemis.Engine.Input;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -27,6 +28,9 @@ namespace Artemis.Engine
         private MultiformManager _MultiformManager;
         private GameProperties _GameProperties;
 
+        private MouseInput _Mouse;
+        private KeyboardInput _Keyboard;
+
         private Engine(GameProperties properties) 
         {
             _GameProperties = properties;
@@ -49,6 +53,9 @@ namespace Artemis.Engine
 
             _RenderPipeline = new RenderPipeline(spriteBatch, GraphicsDevice, graphics);
             _MultiformManager = new MultiformManager();
+
+            _Mouse = new MouseInput();
+            _Keyboard = new KeyboardInput();
         }
 
         /// <summary>
@@ -74,7 +81,9 @@ namespace Artemis.Engine
         {
             base.Update(gameTime);
 
-            MultiformManager.Update();
+            _MultiformManager.Update();
+            _Mouse.Update();
+            _Keyboard.Update();
         }
 
         /// <summary>
@@ -85,9 +94,9 @@ namespace Artemis.Engine
         {
             _RenderPipeline.BeginRenderCycle();
 
-            MultiformManager.Render();
+            _MultiformManager.Render();
 
-            RenderPipeline.EndRenderCycle();
+            _RenderPipeline.EndRenderCycle();
 
             base.Draw(gameTime);
         }
@@ -143,6 +152,13 @@ namespace Artemis.Engine
         /// The global game properties.
         /// </summary>
         public static GameProperties GameProperties { get { return Instance._GameProperties; } }
+
+        /// <summary>
+        /// The global game Mouse input provider.
+        /// </summary>
+        public static MouseInput Mouse { get { return Instance._Mouse; } }
+
+        public static KeyboardInput Keyboard { get { return Instance._Keyboard; } }
 
         /// <summary>
         /// Setup the game's properties using the setup file with the supplied name.
