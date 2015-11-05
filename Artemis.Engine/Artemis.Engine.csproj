@@ -42,6 +42,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ArtemisObject.cs" />
+    <Compile Include="DynamicAttributeContainer.cs" />
+    <Compile Include="GlobalTimer.cs" />
+    <Compile Include="GlobalUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
