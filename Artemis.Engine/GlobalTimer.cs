@@ -18,7 +18,7 @@ namespace Artemis.Engine.Utilities
         /// </summary>
         internal void UpdateTime()
         {
-            // Update time
+            ElapsedTime += DeltaTime;
         }
     }
 }
