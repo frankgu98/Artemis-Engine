@@ -43,10 +43,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssetLoader.cs" />
-    <Compile Include="Engine.cs" />
+    <Compile Include="EnginePrivate.cs" />
+    <Compile Include="EnginePublic.cs" />
     <Compile Include="EngineSetupException.cs" />
     <Compile Include="GameProperties.cs" />
     <Compile Include="GameSetupReader.cs" />
+    <Compile Include="Input\KeyboardInput.cs" />
+    <Compile Include="Input\MouseButton.cs" />
+    <Compile Include="Input\MouseInput.cs" />
     <Compile Include="MultiformManager.cs" />
     <Compile Include="MultiformManagerException.cs" />
     <Compile Include="MultiformPostUpdateEvent.cs" />
@@ -63,9 +67,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Input\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -37,10 +37,13 @@ namespace Artemis.Engine
         public static GameProperties GameProperties { get { return Instance._GameProperties; } }
 
         /// <summary>
-        /// The global game Mouse input provider.
+        /// The global game mouse input provider.
         /// </summary>
         public static MouseInput Mouse { get { return Instance._Mouse; } }
 
+        /// <summary>
+        /// The global game keyboard input provider.
+        /// </summary>
         public static KeyboardInput Keyboard { get { return Instance._Keyboard; } }
 
         /// <summary>

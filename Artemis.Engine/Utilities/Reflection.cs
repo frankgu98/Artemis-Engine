@@ -87,5 +87,30 @@ namespace Artemis.Engine.Utilities
     		return attrs;
     	}
 
+        /// <summary>
+        /// Return the number of items defined in an enum.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static int EnumItemCount(Type type)
+        {
+            return Enum.GetNames(type).Length;
+        }
+
+        /// <summary>
+        /// Return all the items in an enum as a list.
+        /// WARNING: This method isn't very fast, use with care!
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static List<T> EnumItems<T>() where T : struct, IConvertible
+        {
+            if (!typeof(T).IsEnum)
+            {
+                throw new ArgumentException("Generic parameter must be an enum.");
+            }
+            return new List<T>((T[])Enum.GetValues(typeof(T)));
+            
+        }
     }
 }

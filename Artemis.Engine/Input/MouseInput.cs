@@ -6,7 +6,7 @@ using System.Linq;
 namespace Artemis.Engine.Input
 {
     /// <summary>
-    /// The main MouseInput class.
+    /// The main mouse input provider class.
     /// </summary>
     internal sealed class MouseInput
     {
