@@ -12,6 +12,7 @@ namespace Artemis.Engine
     {
         public GraphicsDevice GraphicsDevice { get; private set; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+        internal bool BegunRenderCycle { get; set; }
 
         private SpriteBatch SpriteBatch;
 
@@ -25,10 +26,10 @@ namespace Artemis.Engine
         public void Render(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, 
             Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
-            //if Globals.BegunRendering
-            //SpriteBatch.Begin();
-            SpriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
-            //SpriteBatch.End();
+            if (BegunRenderCycle)
+            {
+                SpriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+            }
         }
 
 
