@@ -119,7 +119,7 @@ namespace Artemis.Engine
                         );
                 }
 
-                var multiformInstance = Activator.CreateInstance(multiformType);
+                var multiformInstance = (Multiform)Activator.CreateInstance(multiformType);
                 MultiformManager.RegisterMultiform(name, multiformInstance);
             }
         }
