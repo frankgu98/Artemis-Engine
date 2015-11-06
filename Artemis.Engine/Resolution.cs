@@ -24,7 +24,7 @@ namespace Artemis.Engine
         /// The minimum value of the width and height. This is used to properly scale
         /// sprites relative to the maximum valid resolution height.
         /// </summary>
-        public int Min { get { return Width < Height ? Width : Height; } }
+        public int Min { get { return Width < Height ? Width : Height; }}
 
         public int Max { get { return Width > Height ? Width : Height; } }
 
