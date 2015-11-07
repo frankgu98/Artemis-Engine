@@ -89,7 +89,7 @@ namespace Artemis.Engine
         /// <param name="gameTime"></param>
         sealed protected override void Draw(GameTime gameTime)
         {
-            _RenderPipeline.BegunRenderCycle=true;
+            _RenderPipeline.BegunRenderCycle = true;
 
             _MultiformManager.Render();
 
