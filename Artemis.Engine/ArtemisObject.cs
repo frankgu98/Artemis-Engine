@@ -1,5 +1,4 @@
-﻿using Artemis.Engine.Utilities;
-using System;
+﻿using System;
 
 namespace Artemis.Engine
 {

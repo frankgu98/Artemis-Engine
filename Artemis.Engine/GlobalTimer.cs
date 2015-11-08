@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Artemis.Engine.Utilities
+namespace Artemis.Engine
 {
     public sealed class GlobalTimer
     {
