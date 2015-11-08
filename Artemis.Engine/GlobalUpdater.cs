@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Artemis.Engine.Utilities
 {
-    public class GlobalUpdater
+    public sealed class GlobalUpdater
     {
         /// <summary>
         /// List of objects that are to be controlled by the GlobalUpdater
         /// </summary>
         internal List<ArtemisObject> Objects { get; private set; }
 
-        public GlobalUpdater()
+        internal GlobalUpdater()
         {
             Objects = new List<ArtemisObject>();
         }

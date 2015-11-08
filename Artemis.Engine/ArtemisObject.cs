@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Artemis.Engine.Utilities;
+﻿using Artemis.Engine.Utilities;
+using System;
 
 namespace Artemis.Engine
 {
@@ -16,7 +13,7 @@ namespace Artemis.Engine
         /// <summary>
         /// Decides whether or not to update object
         /// </summary>
-        public bool NeedsUpdate { get; set; }
+        public bool NeedsUpdate { get; internal set; }
 
         private Action updater;
 

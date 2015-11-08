@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Artemis.Engine.Utilities
 {
-    public class GlobalTimer
+    public sealed class GlobalTimer
     {
         /// <summary>
         /// Global reference to the games total time and it's propeties
@@ -28,10 +24,7 @@ namespace Artemis.Engine.Utilities
         /// </summary>
         public double DeltaTime { get; private set; }
 
-        internal GlobalTimer()
-        {
-            // Constructor
-        }
+        internal GlobalTimer() { }
 
         /// <summary>
         /// Updates total game time with new time

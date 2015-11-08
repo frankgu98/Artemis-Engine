@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Artemis.Engine;
 
 namespace Artemis.Engine.Utilities
 {
@@ -21,9 +18,9 @@ namespace Artemis.Engine.Utilities
         /// <summary>
         /// Get value of attribute
         /// </summary>
-        public Object Get<T>(string name)
+        public T Get<T>(string name)
         {
-            return Attributes[name];
+            return (T)Attributes[name];
         }
 
         /// <summary>
