@@ -15,21 +15,25 @@ namespace Artemis.Engine
 
         #region Xml Constants
 
-        private const string BASE_RESOLUTION_ELEMENT = "BaseResolution";
-        private const string FULLSCREEN_ELEMENT = "Fullscreen";
-        private const string FULLSCREEN_TOGGLABLE_ELEMENT = "FullscreenTogglable";
-        private const string MOUSE_VISIBLE_ELEMENT = "MouseVisible";
+        // Xml Tags
+        private const string BASE_RESOLUTION_ELEMENT            = "BaseResolution";
+        private const string FULLSCREEN_ELEMENT                 = "Fullscreen";
+        private const string FULLSCREEN_TOGGLABLE_ELEMENT       = "FullscreenTogglable";
+        private const string MOUSE_VISIBLE_ELEMENT              = "MouseVisible";
         private const string MOUSE_VISIBILITY_TOGGLABLE_ELEMENT = "MouseVisibilityTogglable";
-        private const string BORDERLESS_ELEMENT = "Borderless";
-        private const string BORDER_TOGGLABLE_ELEMENT = "BorderTogglable";
-        private const string WINDOW_TITLE_ELEMENT = "WindowTitle";
-        private const string VSYNC_ELEMENT = "VSync";
-        private const string BG_COLOUR_ELEMENT = "BackgroundColour";
-        private const string CONTENT_FOLDER_ELEMENT = "ContentFolder";
+        private const string BORDERLESS_ELEMENT                 = "Borderless";
+        private const string BORDER_TOGGLABLE_ELEMENT           = "BorderTogglable";
+        private const string WINDOW_TITLE_ELEMENT               = "WindowTitle";
+        private const string VSYNC_ELEMENT                      = "VSync";
+        private const string BG_COLOUR_ELEMENT                  = "BackgroundColour";
+        private const string CONTENT_FOLDER_ELEMENT             = "ContentFolder";
 
+        // Xml Inner Text Regexs
         private const string RESOLUTION_REGEX = @"[0-9]+x[0-9]+$";
-        private const string COLOUR_REGEX = @"0(x|X)[0-9a-fA-F]{6}$";
+        private const string COLOUR_REGEX     = @"0(x|X)[0-9a-fA-F]{6}$";
 
+        // Xml Inner Text Identifiers (magic strings that denote special values when used
+        // as the inner text in an Xml tag).
         private const string NATIVE_RESOLUTION = "Native";
 
         #endregion
@@ -51,6 +55,7 @@ namespace Artemis.Engine
         public GameProperties Read()
         {
             var properties = new GameProperties();
+
             var setupFile = new XmlDocument();
             setupFile.Load(SetupFileName);
 
@@ -90,37 +95,46 @@ namespace Artemis.Engine
             switch (element.Name)
             {
                 case BASE_RESOLUTION_ELEMENT:
-                    properties.BaseResolution = ReadResolution(element, GameProperties.DEFAULT_RESOLUTION);
+                    properties.BaseResolution = ReadResolution(
+                        element, GameProperties.DEFAULT_RESOLUTION);
                     break;
                 case FULLSCREEN_ELEMENT:
-                    properties.Fullscreen = ReadBool(element, GameProperties.DEFAULT_FULLSCREEN);
+                    properties.Fullscreen = ReadBool(
+                        element, GameProperties.DEFAULT_FULLSCREEN);
                     break;
                 case FULLSCREEN_TOGGLABLE_ELEMENT:
-                    properties.FullscreenTogglable = ReadBool(element, GameProperties.DEFAULT_FULLSCREEN_TOGGLABLE);
+                    properties.FullscreenTogglable = ReadBool(
+                        element, GameProperties.DEFAULT_FULLSCREEN_TOGGLABLE);
                     break;
                 case MOUSE_VISIBLE_ELEMENT:
-                    properties.MouseVisible = ReadBool(element, GameProperties.DEFAULT_MOUSE_VISIBLE);
+                    properties.MouseVisible = ReadBool(
+                        element, GameProperties.DEFAULT_MOUSE_VISIBLE);
                     break;
                 case MOUSE_VISIBILITY_TOGGLABLE_ELEMENT:
-                    properties.MouseVisibilityTogglable = ReadBool(element, GameProperties.DEFAULT_MOUSE_VISIBILITY_TOGGLABLE);
+                    properties.MouseVisibilityTogglable = ReadBool(
+                        element, GameProperties.DEFAULT_MOUSE_VISIBILITY_TOGGLABLE);
                     break;
                 case BORDERLESS_ELEMENT:
-                    properties.Borderless = ReadBool(element, GameProperties.DEFAULT_BORDERLESS);
+                    properties.Borderless = ReadBool(
+                        element, GameProperties.DEFAULT_BORDERLESS);
                     break;
                 case BORDER_TOGGLABLE_ELEMENT:
-                    properties.BorderTogglable = ReadBool(element, GameProperties.DEFAULT_BORDER_TOGGLABLE);
-                    break;
-                case WINDOW_TITLE_ELEMENT:
-                    properties.WindowTitle = element.InnerText;
+                    properties.BorderTogglable = ReadBool(
+                        element, GameProperties.DEFAULT_BORDER_TOGGLABLE);
                     break;
                 case VSYNC_ELEMENT:
-                    properties.VSync = ReadBool(element, GameProperties.DEFAULT_VSYNC);
+                    properties.VSync = ReadBool(
+                        element, GameProperties.DEFAULT_VSYNC);
                     break;
                 case BG_COLOUR_ELEMENT:
-                    properties.BackgroundColour = ReadColour(element, GameProperties.DEFAULT_BG_COLOUR);
+                    properties.BackgroundColour = ReadColour(
+                        element, GameProperties.DEFAULT_BG_COLOUR);
                     break;
                 case CONTENT_FOLDER_ELEMENT:
                     properties.ContentFolder = element.InnerText;
+                    break;
+                case WINDOW_TITLE_ELEMENT:
+                    properties.WindowTitle = element.InnerText;
                     break;
                 default:
                     break;
@@ -152,8 +166,12 @@ namespace Artemis.Engine
         private Resolution ReadResolution(XmlElement element, Resolution defaultValue)
         {
             var text = element.InnerText;
+
             if (text == NATIVE_RESOLUTION)
+            {
                 return Resolution.Native;
+            }
+
             if (!Regex.IsMatch(text, RESOLUTION_REGEX))
             {
                 // Log that we couldn't figure out the resolution.
@@ -162,8 +180,9 @@ namespace Artemis.Engine
 
             var parts = text.Split('x');
 
-            var width = Int32.Parse(parts[0]);
+            var width  = Int32.Parse(parts[0]);
             var height = Int32.Parse(parts[1]);
+
             return new Resolution(width, height);
         }
 
@@ -174,12 +193,17 @@ namespace Artemis.Engine
         {
             var text = element.InnerText;
                 
-            // If the given colour string is a name, attempt to find it as a static property
-            // of Color.
-            var prop = typeof(Color).GetProperty(
-                    text,
-                    BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy
-                    );
+            // If the given colour string is a name, attempt 
+            // to find it as a static property of Color.
+
+            // The binding flags when searching for the color
+            // property in typeof(Color).
+            var binding = BindingFlags.Public | 
+                          BindingFlags.Static | 
+                          BindingFlags.FlattenHierarchy;
+
+            var prop = typeof(Color).GetProperty(text, binding);
+
             if (prop != null)
             {
                 return (Color)prop.GetValue(null, null);
@@ -190,10 +214,13 @@ namespace Artemis.Engine
                 // Log that we couldn't figure out the colour.
                 return defaultValue;
             }
+
             var val = Convert.ToInt32(text, 16);
+
             var r = 0xff & (val >> 16);
             var g = 0xff & (val >> 8);
             var b = 0xff & val;
+
             return new Color(r, g, b);
         }
 
