@@ -8,21 +8,16 @@ The Artemis Engine is developed by a group of programmers with plenty of first-h
 
 The engine features
 
-	- **Multiforms**: Similar to the Cocos2D engine, games are created using *Multiforms* that partition game logic into distinct objects.
-
-	- **Polish**: One of the Artemis Engine's major focuses is the need for "polish" in a game; the small changes and additions you add to your game that make it a polished, finalized product. Often, a game's source code will be 20% actual game code and 80% polish code. Artemis Engine cuts that down significantly with many builtin features.
-
-	- **Builtin Runtime Automated Testing**: Automated testing of games is a heavily unexplored direction for game engines to take. Artemis Engine goes to new heights by supplying a variety of useful tools for automatically testing your game's features, such as *user input simulation*, *automated benchmarking*, and *approval testing*.
++ **Multiforms**: Similar to the Cocos2D engine, games are created using *Multiforms* that partition game logic into distinct objects.
++ **Polish**: One of the Artemis Engine's major focuses is the need for "polish" in a game; the small changes and additions you add to your game that make it a polished, finalized product. Often, a game's source code will be 20% actual game code and 80% polish code. Artemis Engine cuts that down significantly with many builtin features.
++ **Builtin Runtime Automated Testing**: Automated testing of games is a heavily unexplored direction for game engines to take. Artemis Engine goes to new heights by supplying a variety of useful tools for automatically testing your game's features, such as *user input simulation*, *automated benchmarking*, and *approval testing*.
 
 Artemis Engine values
 
-	- **OOP** and **SOLID** design principles.
-
-	- **Agile Development Methodology**.
-
-	- **Fast** and **flexible** game development.
-	
-	- **KISS** Principle.
++ **OOP** and **SOLID** design principles.
++ **Agile Development Methodology**.
++ **Fast** and **flexible** game development.
++ **KISS** Principle.
 
 ## Projects
 
