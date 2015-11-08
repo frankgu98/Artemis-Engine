@@ -2,22 +2,37 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-
-
 namespace Artemis.Engine
 {
     /// <summary>
-    /// RenderPipeline Class that draws using the Monogame tools.
-    /// Having this allows us to keep the user away from Monogame and simplify some common drawing procedures
+    /// RenderPipeline Class that draws using the Monogame tools. 
+    /// Having this allows us to keep the user away from Monogame 
+    /// and simplify some common drawing procedures
     /// </summary>
     public class RenderPipeline
     {
-        public GraphicsDevice GraphicsDevice { get; private set; } // GraphicsDevice that will be drawn on
-        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; } // Mostly useless
-        internal bool BegunRenderCycle { get; set; } // If the user has started a RenderCycle
-        private bool setRenderProperties { get; set; } //If the user has setRenderProperties (ie begun a SpriteBatch)
 
-        private SpriteBatch SpriteBatch; //SpriteBatch that draws everything
+        /// <summary>
+        /// GraphicsDevice that will be drawn to.
+        /// </summary>
+        public GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Mostly useless.
+        /// </summary>
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+
+        /// <summary>
+        /// If the user has started a RenderCycle.
+        /// </summary>
+        internal bool BegunRenderCycle { get; set; }
+
+        /// <summary>
+        /// If the spriteBatch has been begun.
+        /// </summary>
+        private bool spriteBatchBegun { get; set; }
+
+        internal SpriteBatch SpriteBatch; // SpriteBatch that draws everything.
 
         /// <summary>
         /// Constructs a RenderPipeline with everything a user might need to draw things
@@ -33,50 +48,63 @@ namespace Artemis.Engine
         }
 
         /// <summary>
-        /// The main rendering function the user will use to make graphics appear onscreen
+        /// Begin the render cycle, in which rendering can take place.
+        /// </summary>
+        internal void BeginRenderCycle()
+        {
+            BegunRenderCycle = true;
+            spriteBatchBegun = true;
+            SpriteBatch.Begin();
+        }
+
+        /// <summary>
+        /// End the render cycle. This ends the spriteBatch as well.
+        /// </summary>
+        internal void EndRenderCycle()
+        {
+            BegunRenderCycle = false;
+            spriteBatchBegun = false;
+            SpriteBatch.End();
+        }
+
+        /// <summary>
+        /// Directly render a texture to the screen with the given parameters.
         /// </summary>
         /// <param name="texture"></param>
         /// <param name="position"></param>
         /// <param name="sourceRectangle"></param>
-        /// <param name="color"></param>
+        /// <param name="colour"></param>
         /// <param name="rotation"></param>
         /// <param name="origin"></param>
         /// <param name="scale"></param>
         /// <param name="effects"></param>
         /// <param name="layerDepth"></param>
-        public void Render(Texture2D texture,
-                           Vector2 position,
-                           Rectangle? sourceRectangle = null,
-                           Color? color = null,
-                           float rotation = 0,
-                           Vector2? origin = null,
-                           Vector2? scale = null,
-                           SpriteEffects effects = SpriteEffects.None,
-                           float layerDepth = 0)
+        public void Render(Texture2D texture
+                          , Vector2 position
+                          , Rectangle? sourceRectangle = null
+                          , Color? colour              = null
+                          , float rotation             = 0
+                          , Vector2? origin            = null
+                          , Vector2? scale             = null
+                          , SpriteEffects effects      = SpriteEffects.None
+                          , float layerDepth           = 0)
         {
             //consider catching exceptions instead
             if (BegunRenderCycle)
             {
-                if (setRenderProperties)
-                {
-                    SpriteBatch.Draw(texture,
-                                     position,
-                                     sourceRectangle,
-                                     color == null ? Color.White : (Color)color,
-                                     rotation,
-                                     origin == null ? Vector2.Zero : (Vector2)origin,
-                                     scale == null ? Vector2.Zero : (Vector2)scale,
-                                     effects,
-                                     layerDepth);
-                }
-                else
-                {
-                    throw new RenderPropertiesNotSetException("You must set the RenderProperties before attempting to draw");
-                }
+                var _colour = colour.HasValue ? colour.Value : Color.White;
+                var _origin = origin.HasValue ? origin.Value : Vector2.Zero;
+                var _scale  = scale.HasValue  ? scale.Value  : Vector2.One;
+
+                SpriteBatch.Draw(
+                    texture, position, sourceRectangle, _colour, rotation,
+                    _origin, _scale, effects, layerDepth
+                    );
             }
             else
             {
-                throw new RenderCycleNotBegunException("You must begin the RenderCycle before attempting to draw");
+                throw new RenderPipelineException(
+                    "Rendering must occur in the render cycle.");
             }
         }
 
@@ -90,25 +118,20 @@ namespace Artemis.Engine
         /// <param name="rs"></param>
         /// <param name="e"></param>
         /// <param name="m"></param>
-        public void SetRenderProperties(SpriteSortMode ssm = SpriteSortMode.Deferred,
-                                        BlendState bs = null,
-                                        SamplerState ss = null,
-                                        DepthStencilState dss = null,
-                                        RasterizerState rs = null,
-                                        Effect e = null,
-                                        Matrix? m = null)
+        public void SetRenderProperties( SpriteSortMode ssm    = SpriteSortMode.Deferred
+                                       , BlendState bs         = null
+                                       , SamplerState ss       = null
+                                       , DepthStencilState dss = null
+                                       , RasterizerState rs    = null
+                                       , Effect e              = null
+                                       , Matrix? m             = null)
         {
-            if (setRenderProperties)
+            if (spriteBatchBegun)
             {
-                throw new RenderPropertiesAlreadySet("You must clear the RenderProperties before attempting to set them again");
+                SpriteBatch.End();
             }
-            else
-            {
-                SpriteBatch.Begin(ssm, bs, ss, dss, rs, e, m);
-                setRenderProperties = true;
-            }
-            
- 
+            SpriteBatch.Begin(ssm, bs, ss, dss, rs, e, m);
+            spriteBatchBegun = true;
         }
 
         /// <summary>
@@ -116,77 +139,11 @@ namespace Artemis.Engine
         /// </summary>
         public void ClearRenderProperties()
         {
-            if (setRenderProperties)
+            if (spriteBatchBegun)
             {
                 SpriteBatch.End();
-                setRenderProperties = false;
             }
-            else
-            {
-                throw new RenderPropertiesNotSetException("You must set the RenderProperties before attempting to clear them");
-            }
-            
-        }
-
-    }
-
-    /// <summary>
-    /// Thrown when the user tries to do something outside the RenderCycle that should be done within the RenderCycle
-    /// </summary>
-    public class RenderCycleNotBegunException : Exception
-    {
-        public RenderCycleNotBegunException()
-        {
-        }
-
-        public RenderCycleNotBegunException(string message)
-            : base(message)
-        {
-        }
-
-        public RenderCycleNotBegunException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the user tries to do something that requires RenderProperties wthout having chosen any RenderProperties
-    /// </summary>
-    public class RenderPropertiesNotSetException : Exception
-    {
-        public RenderPropertiesNotSetException()
-        {
-        }
-
-        public RenderPropertiesNotSetException(string message)
-            : base(message)
-        {
-        }
-
-        public RenderPropertiesNotSetException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Thrown when the user tries to set RenderProperties again without having cleared them
-    /// </summary>
-    public class RenderPropertiesAlreadySet : Exception
-    {
-        public RenderPropertiesAlreadySet()
-        {
-        }
-
-        public RenderPropertiesAlreadySet(string message)
-            : base(message)
-        {
-        }
-
-        public RenderPropertiesAlreadySet(string message, Exception inner)
-            : base(message, inner)
-        {
+            SpriteBatch.Begin();
         }
     }
 }
