@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Artemis.Engine.Utilities
+namespace Artemis.Engine
 {
     public sealed class GlobalUpdater
     {
