@@ -8,7 +8,7 @@ namespace Artemis.Engine.Input
     /// <summary>
     /// The main mouse input provider class.
     /// </summary>
-    internal sealed class MouseInput
+    public sealed class MouseInput
     {
 
         /// <summary>

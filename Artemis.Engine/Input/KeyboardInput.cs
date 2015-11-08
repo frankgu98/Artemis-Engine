@@ -8,7 +8,7 @@ namespace Artemis.Engine.Input
     /// <summary>
     /// The main keyboard input provider class.
     /// </summary>
-    internal sealed class KeyboardInput
+    public sealed class KeyboardInput
     {
 
         private static List<Keys> AllKeys;

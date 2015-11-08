@@ -89,11 +89,11 @@ namespace Artemis.Engine
         /// <param name="gameTime"></param>
         sealed protected override void Draw(GameTime gameTime)
         {
-            _RenderPipeline.BeginRenderCycle();
+            _RenderPipeline.BegunRenderCycle = true;
 
             _MultiformManager.Render();
 
-            _RenderPipeline.EndRenderCycle();
+            _RenderPipeline.BegunRenderCycle = false;
 
             base.Draw(gameTime);
         }
@@ -119,7 +119,7 @@ namespace Artemis.Engine
                         );
                 }
 
-                var multiformInstance = Activator.CreateInstance(multiformType);
+                var multiformInstance = (Multiform)Activator.CreateInstance(multiformType);
                 MultiformManager.RegisterMultiform(name, multiformInstance);
             }
         }
