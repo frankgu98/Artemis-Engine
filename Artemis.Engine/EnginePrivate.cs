@@ -21,12 +21,13 @@ namespace Artemis.Engine
 
         // Private instance fields
 
-        private RenderPipeline _RenderPipeline;
+        private RenderPipeline   _RenderPipeline;
         private MultiformManager _MultiformManager;
-        private GameProperties _GameProperties;
-
-        private MouseInput _Mouse;
-        private KeyboardInput _Keyboard;
+        private GameProperties   _GameProperties;
+        private GlobalTimer      _GameTimer;
+        private GlobalUpdater    _GameUpdater;
+        private MouseInput       _Mouse;
+        private KeyboardInput    _Keyboard;
 
         private Engine(GameProperties properties) 
         {
@@ -48,11 +49,12 @@ namespace Artemis.Engine
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _RenderPipeline = new RenderPipeline(spriteBatch, GraphicsDevice, graphics);
+            _RenderPipeline   = new RenderPipeline(spriteBatch, GraphicsDevice, graphics);
             _MultiformManager = new MultiformManager();
-
-            _Mouse = new MouseInput();
-            _Keyboard = new KeyboardInput();
+            _GameTimer        = new GlobalTimer();
+            _GameUpdater      = new GlobalUpdater();
+            _Mouse            = new MouseInput();
+            _Keyboard         = new KeyboardInput();
         }
 
         /// <summary>
@@ -78,9 +80,18 @@ namespace Artemis.Engine
         {
             base.Update(gameTime);
 
-            _MultiformManager.Update();
+            // Update the time first...
+            _GameTimer.UpdateTime(gameTime);
+
+            // Then the input...
             _Mouse.Update();
             _Keyboard.Update();
+
+            // Then the multiforms...
+            _MultiformManager.Update();
+
+            // And finally all remaining ArtemisObjects.
+            _GameUpdater.FinalizeUpdate();
         }
 
         /// <summary>
@@ -89,7 +100,6 @@ namespace Artemis.Engine
         /// <param name="gameTime"></param>
         sealed protected override void Draw(GameTime gameTime)
         {
-
             _RenderPipeline.BeginRenderCycle();
 
             _MultiformManager.Render();

@@ -37,6 +37,18 @@ namespace Artemis.Engine
         public static GameProperties GameProperties { get { return Instance._GameProperties; } }
 
         /// <summary>
+        /// The global game timer which records total elapsed game time, frames passed, 
+        /// and elapsed time since the last update.
+        /// </summary>
+        public static GlobalTimer GameTimer { get { return Instance._GameTimer; } }
+
+        /// <summary>
+        /// The global game updater which is in charge of remembering and
+        /// updating ArtemisObjects.
+        /// </summary>
+        public static GlobalUpdater GameUpdater { get { return Instance._GameUpdater; } }
+
+        /// <summary>
         /// The global game mouse input provider.
         /// </summary>
         public static MouseInput Mouse { get { return Instance._Mouse; } }
