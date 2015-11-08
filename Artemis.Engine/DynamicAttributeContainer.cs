@@ -6,17 +6,39 @@ using Artemis.Engine;
 
 namespace Artemis.Engine.Utilities
 {
-    class DynamicAttributeContainer
+    public class DynamicAttributeContainer
     {
-        public T Get<T>(string name)
+        /// <summary>
+        /// List of attributs of and ArtemisObject
+        /// </summary>
+        internal Dictionary<string, Object> Attributes { get; private set; }
+
+        public DynamicAttributeContainer()
         {
-            T x;
-            return x;
+            Attributes = new Dictionary<string, Object>();
         }
 
+        /// <summary>
+        /// Get value of attribute
+        /// </summary>
+        public Object Get<T>(string name)
+        {
+            return Attributes[name];
+        }
+
+        /// <summary>
+        /// Set the value of an attribute. If the attribute does not exist, it will be createed.
+        /// </summary>
         public void Set<T>(string name, T obj)
         {
-            // set stuff
+            if (Attributes.ContainsKey(name))
+            {
+                Attributes[name] = obj;
+            }
+            else
+            {
+                Attributes.Add(name, obj);
+            }
         }
     }
 }

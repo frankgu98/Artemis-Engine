@@ -6,19 +6,42 @@ using Microsoft.Xna.Framework;
 
 namespace Artemis.Engine.Utilities
 {
-    class GlobalTimer
+    public class GlobalTimer
     {
+        /// <summary>
+        /// Global reference to the games total time and it's propeties
+        /// </summary>
         public GameTime GlobalGameTime { get; private set; }
-        public double ElapsedTime { get; private set; }
-        public int ElapsedFrames { get; private set; }
-        public double DeltaTime { get; private set; }
 
         /// <summary>
-        /// Updates elapsed game time
+        /// Total time in milliseconds
         /// </summary>
-        internal void UpdateTime()
+        public double ElapsedTime { get; private set; }
+
+        /// <summary>
+        /// Total frames advanced
+        /// </summary>
+        public int ElapsedFrames { get; private set; }
+
+        /// <summary>
+        /// Time change between updates
+        /// </summary>
+        public double DeltaTime { get; private set; }
+
+        internal GlobalTimer()
         {
+            // Constructor
+        }
+
+        /// <summary>
+        /// Updates total game time with new time
+        /// </summary>
+        internal void UpdateTime(GameTime gameTime)
+        {
+            DeltaTime = gameTime.ElapsedGameTime.TotalMilliseconds;
+            GlobalGameTime = gameTime;
             ElapsedTime += DeltaTime;
+            ElapsedFrames++;
         }
     }
 }

@@ -6,7 +6,7 @@ using Artemis.Engine.Utilities;
 
 namespace Artemis.Engine
 {
-    class ArtemisObject
+    public class ArtemisObject
     {
         /// <summary>
         /// The list of attributes attached to the object
@@ -16,14 +16,16 @@ namespace Artemis.Engine
         /// <summary>
         /// Decides whether or not to update object
         /// </summary>
-        public bool NeedsUpdate;
+        public bool NeedsUpdate { get; set; }
+
+        private Action updater;
 
         /// <summary>
         /// Sets the ArtemisObject's current updater to 'updater'
         /// </summary>
         public void SetUpdater(Action updater)
         {
-            // set updater
+            this.updater = updater;
         }
 
         /// <summary>
@@ -31,7 +33,12 @@ namespace Artemis.Engine
         /// </summary>
         public void Update()
         {
-            // Update
+            if (updater != null)
+            {
+                updater();
+            }
+
+            NeedsUpdate = false;
         }
     }
 }
