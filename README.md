@@ -40,3 +40,7 @@ If you want to contribute, fork the repository and get to work! There are lots o
 Since the engine is currently in its very early develompent stages, heavy coordination between the project manager and contributors is required. If you'd like to help develop the engine, you can contact the project manager at Michaelfonzolo@gmail.com. 
 
 Alternatively, you can look for currently open issues for the project and address them on your own.
+
+## License
+
+MIT
