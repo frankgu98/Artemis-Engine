@@ -64,6 +64,8 @@
     <Compile Include="RenderPipeline.cs" />
     <Compile Include="RenderPipelineException.cs" />
     <Compile Include="Resolution.cs" />
+    <Compile Include="AssetGroup.cs" />
+    <Compile Include="Utilities\DirectoryUtils.cs" />
     <Compile Include="Utilities\Reflection.cs" />
   </ItemGroup>
   <ItemGroup>
