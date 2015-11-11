@@ -147,15 +147,11 @@ namespace Artemis.Engine
                 throw new EngineSetupException(
                     "Must call Engine.Setup before call to Engine.Begin.");
             }
-            Instance.Run();
-        }
 
-        /// <summary>
-        /// End the game.
-        /// </summary>
-        public static void End()
-        {
-
+            using (Instance)
+            {
+                Instance.Run();
+            }
         }
     }
 }
