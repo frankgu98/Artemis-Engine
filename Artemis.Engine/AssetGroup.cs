@@ -1,13 +1,12 @@
 ﻿using Artemis.Engine.Utilities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
+/* using System; */
 
 namespace Artemis.Engine
 {
-    public class AssetGroup
+    public class AssetGroup /* : IDisposable */
     {
 
         /// <summary>
@@ -22,7 +21,8 @@ namespace Artemis.Engine
         {
             get
             {
-                return Parent == null ? Name : Parent.FullName + "." + Name;
+                return Parent == null ? Name
+                                      : Parent.FullName + AssetLoader.ASSET_URI_SEPARATOR + Name;
             }
         }
 
@@ -31,6 +31,10 @@ namespace Artemis.Engine
         /// </summary>
         public AssetGroup Parent { get; private set; }
 
+        /// <summary>
+        /// Check if this group is empty (i.e. it has no assets and it has no
+        /// subgroups).
+        /// </summary>
         public bool IsEmpty
         {
             get
@@ -50,9 +54,11 @@ namespace Artemis.Engine
         /// </summary>
         private Dictionary<string, object> Assets = new Dictionary<string, object>();
 
-        internal AssetGroup(
-            string pathName, SearchOption option, 
-            string fileSearchQuery = "*", string folderSearchQuery = "*")
+        internal AssetGroup( string pathName
+                           , SearchOption option
+                           , string fileSearchQuery   = "*"
+                           , string folderSearchQuery = "*"
+                           , bool pruneEmptySubgroups = true )
         {
             Name = Path.GetFileName(pathName);
 
@@ -92,21 +98,85 @@ namespace Artemis.Engine
 
             // Prune empty subgroups.
 
-            var toRemove = new List<string>();
-
-            foreach (var kvp in Subgroups)
+            if (pruneEmptySubgroups)
             {
-                if (kvp.Value.IsEmpty)
-                {
-                    toRemove.Add(kvp.Key);
-                }
+                Subgroups = Subgroups.Where(kvp => !kvp.Value.IsEmpty)
+                                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
-
-            foreach (var name in toRemove)
-            {
-                Subgroups.Remove(name);
-            }
-
         }
+
+        /// <summary>
+        /// Return a subgroup of this asset group with the given full name.
+        /// 
+        /// Example:
+        /// If this group's name is "Parent", then calling GetSubgroup("Child.GrandChild")
+        /// will return the group "Parent.Child.GrandChild".
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        public AssetGroup GetSubgroup(string fullName)
+        {
+            return GetSubgroup(fullName.Split(AssetLoader.ASSET_URI_SEPARATOR));
+        }
+
+        internal AssetGroup GetSubgroup(string[] subgroupNameParts)
+        {
+            if (subgroupNameParts.Length == 1)
+            {
+                return Subgroups[subgroupNameParts[0]];
+            }
+            var newParts = subgroupNameParts.Skip(1).ToArray();
+            return Subgroups[subgroupNameParts[0]].GetSubgroup(newParts);
+        }
+
+        /// <summary>
+        /// Return the asset with the given full name.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        public T GetAsset<T>(string fullName)
+        {
+            return (T)GetAsset(fullName.Split('.'));
+        }
+
+        private object GetAsset(string[] nameParts)
+        {
+            if (nameParts.Length == 1)
+            {
+                return Assets[nameParts[0]];
+            }
+            var newParts = nameParts.Skip(1).ToArray();
+            return Subgroups[nameParts[0]].GetAsset(newParts);
+        }
+
+        /* Tentative
+
+        private bool disposed = false;
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Release managed objects
+                    // ...
+                }
+
+                // Release native objects
+                // ...
+                disposed = true;
+            }
+        }
+         
+        */
     }
 }
