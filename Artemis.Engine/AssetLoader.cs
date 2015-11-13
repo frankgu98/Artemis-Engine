@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -27,12 +26,24 @@ namespace Artemis.Engine
         /// <summary>
         /// The global ContentManager.
         /// </summary>
-    	private static ContentManager Content;
+    	internal static ContentManager Content;
 
         /// <summary>
         /// The internal dictionary of all asset groups currently loaded in memory.
         /// </summary>
         private static Dictionary<string, AssetGroup> LoadedAssetGroups = new Dictionary<string, AssetGroup>();
+
+        /// <summary>
+        /// The dictionary of asset importers associated with certain types.
+        /// </summary>
+        private static Dictionary<Type, AbstractAssetImporter> RegisteredAssetImportersByType
+            = new Dictionary<Type, AbstractAssetImporter>();
+
+        /// <summary>
+        /// The dictionary of asset importers associated with certain extensions.
+        /// </summary>
+        private static Dictionary<string, AbstractAssetImporter> RegisteredAssetImportersByExtension
+            = new Dictionary<string, AbstractAssetImporter>();
 
         /// <summary>
         /// Initialize the AssetLoader by supplying the ContentManager.
@@ -41,7 +52,23 @@ namespace Artemis.Engine
     	internal static void Initialize(ContentManager content)
     	{
     		Content = content;
-    	}
+
+            // Add default content loaders to the game.
+
+            var texture2DImporter  = new Texture2DAssetImporter();
+            var spritefontImporter = new SpriteFontAssetImporter();
+
+            /* For Android
+            RegisterAssetImporter<Texture2D>(
+                texture2DImporter, "jpg", "bmp", "jpeg", "png", "gif");
+            */
+
+            RegisterAssetImporter<Texture2D>(
+                texture2DImporter, "jpg", "bmp", "jpeg", "png", "gif", "pict", "tga");
+
+            RegisterAssetImporter<SpriteFont>(
+                spritefontImporter, "spritefont");
+        }
 
         /// <summary>
         /// The full name of the content folder.
@@ -60,28 +87,81 @@ namespace Artemis.Engine
         }
 
         /// <summary>
-        /// Load a Texture2D with the given path.
+        /// Register an AssetImporter object to be used when attempting to load an asset
+        /// of the given type, or an asset file with one of the given extensions.
         /// </summary>
-    	public static Texture2D Texture(string name, bool treatAsAssetURI = true)
-    	{
-            if (name.Contains(ASSET_URI_SEPARATOR) && treatAsAssetURI)
+        /// <param name="assetImporter"></param>
+        /// <param name="assetFileExtensions"></param>
+        public static void RegisterAssetImporter<T>(
+            AbstractAssetImporter assetImporter, params string[] assetFileExtensions)
+        {
+            var assetType = typeof(T);
+            if (RegisteredAssetImportersByType.ContainsKey(assetType))
             {
-                return AssetFromURI<Texture2D>(name);
+                throw new AssetImporterRegistrationException(
+                    String.Format("An asset importer has already been " +
+                                  "associated with the type '{0}'.", assetType));
             }
-    		return Content.Load<Texture2D>(name);
-    	}
+            RegisteredAssetImportersByType.Add(assetType, assetImporter);
+            RegisterAssetImporter(assetImporter, assetFileExtensions);
+        }
 
         /// <summary>
-        /// Load a SpriteFont with the given path.
+        /// Register an AssetImporter object to b used when attempting to load an asset
+        /// file with one of the given extensions.
+        /// 
+        /// This is useful if you have multiple different asset importers for the same
+        /// asset type but different asset file extensions. If two asset importers have
+        /// the same associated asset type, but different asset file extensions, the
+        /// AssetLoader will be able to determine the asset importer to use when given a
+        /// file, but will not be able to distinguish the asset importer to use when
+        /// given the asset type.
+        /// 
+        /// To further illustrate:
+        /// <code>
+        ///     AssetLoader.RegisterAssetImporter<Texture2D>(new AssetImporter1(), "doc", "xml");
+        ///     AssetLoader.RegisterAssetImporter(new AssetImporter2(), "docx");
+        /// </code>
+        /// 
+        /// In the above example, it is assumed that AssetImporter1 and AssetImporter2 both import
+        /// Texture2D objects. Calling AssetLoader.Load<Texture2D>(fileName) would use AssetImporter1
+        /// to import the asset, as well as AssetLoader.LoadUsingExtension("something.doc"), but
+        /// AssetLoader.LoadUsingExtension("something.docx") would use AssetImporter2, and
+        /// AssetLoader.Load<Texture2D>("something.docx") would *still* attempt to use AssetImporter1,
+        /// since that's the only asset importer associated with Texture2D.
         /// </summary>
-    	public static SpriteFont Font(string name, bool treatAsAssetURI = true)
-    	{
+        /// <param name="assetImporter"></param>
+        /// <param name="assetFileExtensions"></param>
+        public static void RegisterAssetImporter(
+            AbstractAssetImporter assetImporter, params string[] assetFileExtensions)
+        {
+            foreach (var extension in assetFileExtensions)
+            {
+                if (RegisteredAssetImportersByExtension.ContainsKey(extension))
+                {
+                    throw new AssetImporterRegistrationException(
+                        String.Format("An asset importer has already been " + 
+                                      "associated with the extension '.{0}'", extension));
+                }
+                RegisteredAssetImportersByExtension.Add(extension, assetImporter);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <param name="treatAsAssetURI"></param>
+        /// <returns></returns>
+        public static T Load<T>(string name, bool treatAsAssetURI = true)
+        {
             if (name.Contains(ASSET_URI_SEPARATOR) && treatAsAssetURI)
             {
-                return AssetFromURI<SpriteFont>(name);
+                return AssetFromURI<T>(name);
             }
-    		return Content.Load<SpriteFont>(name);
-    	}
+            return (T)RegisteredAssetImportersByType[typeof(T)].ImportFrom(name);
+        }
 
         /// <summary>
         /// Get an asset from an Asset URI.
@@ -98,7 +178,7 @@ namespace Artemis.Engine
         }
 
         /// <summary>
-        /// Tries to determine the type of file to be loaded based on the extension
+        /// Try to determine the type of file to be loaded based on the extension
         /// type of the file and loads it as said asset.
         /// </summary>
         /// <param name="name"></param>
@@ -112,21 +192,15 @@ namespace Artemis.Engine
                     String.Format("Cannot load asset '{0}'.", name)
                     );
             }
-            var nameWithoutExtension = Path.GetFileNameWithoutExtension(name);
-
-            switch (extension)
+            
+            if (!RegisteredAssetImportersByExtension.ContainsKey(name))
             {
-                case ".png":
-                case ".jpg":
-                case ".jpeg":
-                    return Texture(nameWithoutExtension);
-                case ".spritefont":
-                    return Font(nameWithoutExtension);
-                default:
-                    throw new ArgumentException(
-                        String.Format("Unknown asset extension '{0}'.", extension)
-                        );
+                throw new AssetImportException(
+                    String.Format("No asset importer for asset with extension '.{0}'.", name)
+                    );
             }
+            var importer = RegisteredAssetImportersByExtension[name];
+            return importer.ImportFrom(name);
         }
 
         /// <summary>
@@ -168,11 +242,27 @@ namespace Artemis.Engine
         /// Unload the asset group with the given name.
         /// </summary>
         /// <param name="name"></param>
-        public static void UnloadAssetGroup(string name)
+        public static void UnloadAssetGroup(string name, bool forceGC = true)
         {
-            // LoadedAssetGroups[name].Dispose(true);
+            if (name.Contains(ASSET_URI_SEPARATOR))
+            {
+                var index = name.IndexOf(ASSET_URI_SEPARATOR);
+                LoadedAssetGroups[name.Substring(0, index)]
+                    .RemoveSubgroup(name.Substring(index + 1));                
+            }
+            else
+            {
+                LoadedAssetGroups[name].Dispose();
 
-            LoadedAssetGroups.Remove(name);
+                LoadedAssetGroups.Remove(name);
+            }
+
+            if (forceGC)
+            {
+                // Force garbage collection. Unloading an AssetGroup is disposing of
+                // (usually) a very large number of objects.
+                GC.Collect();
+            }
         }
     }
 }
