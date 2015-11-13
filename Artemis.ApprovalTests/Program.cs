@@ -2,6 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Engine;
+using Artemis.Engine.Input;
+using Artemis.Engine.Utilities;
+using Microsoft.Xna.Framework;
 #endregion
 
 namespace Artemis.ApprovalTests
@@ -15,11 +19,13 @@ namespace Artemis.ApprovalTests
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
-                game.Run();
+            Engine.Engine.Setup(
+                new Resolution(800, 600), false, false, true, 
+                false, true, false, true, Color.Black, "Test1");
+
+            Engine.Engine.Begin();
         }
     }
 #endif

@@ -68,7 +68,10 @@ namespace Artemis.Engine
             {
                 throw new EngineSetupException("Engine.Setup called multiple times.");
             }
+
             Instance = new Engine(new GameSetupReader(name).Read());
+
+            // Instance.Initialize();
         }
 
         /// <summary>
@@ -107,6 +110,8 @@ namespace Artemis.Engine
             properties.VSync = vsync;
 
             Instance = new Engine(properties);
+
+            Instance.Initialize();
         }
 
         /// <summary>

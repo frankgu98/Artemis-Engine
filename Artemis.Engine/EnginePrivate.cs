@@ -29,14 +29,12 @@ namespace Artemis.Engine
         private MouseInput       _Mouse;
         private KeyboardInput    _Keyboard;
 
-        private Engine(GameProperties properties) 
+        private Engine(GameProperties properties) : base()
         {
             _GameProperties = properties;
 
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = properties.ContentFolder;
-
-            Initialize();
         }
 
         /// <summary>
@@ -62,6 +60,8 @@ namespace Artemis.Engine
         /// </summary>
         sealed protected override void LoadContent() 
         {
+            Console.WriteLine("Getting here?");
+
             // Supply the AssetLoader with the game's ContentManager object, so it
             // can actually load content.
             AssetLoader.Initialize(Content);
