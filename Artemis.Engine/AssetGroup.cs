@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-/* using System; */
+using System;
 
 namespace Artemis.Engine
 {
-    public class AssetGroup /* : IDisposable */
+    public class AssetGroup : IDisposable
     {
 
         /// <summary>
@@ -89,14 +89,18 @@ namespace Artemis.Engine
 
             foreach (var fileName in files)
             {
-                var assetFileName = DirectoryUtils.MakeRelativePath(
-                    AssetLoader.ContentFolderName, fileName);
-                var assetName = Path.GetFileName(assetFileName);
+                var assetName = Path.GetFileName(
+                    DirectoryUtils.MakeRelativePath(
+                        AssetLoader.ContentFolderName, fileName));
 
-                Assets.Add(assetName, AssetLoader.LoadAssetUsingExtension(assetName));
+                Assets.Add(assetName, AssetLoader.LoadAssetUsingExtension(fileName));
             }
 
             // Prune empty subgroups.
+            // 
+            // ...
+            //
+            // I really have no good reason why anyone would not want to do this.
 
             if (pruneEmptySubgroups)
             {
@@ -137,7 +141,7 @@ namespace Artemis.Engine
         /// <returns></returns>
         public T GetAsset<T>(string fullName)
         {
-            return (T)GetAsset(fullName.Split('.'));
+            return (T)GetAsset(fullName.Split(AssetLoader.ASSET_URI_SEPARATOR));
         }
 
         private object GetAsset(string[] nameParts)
@@ -150,10 +154,40 @@ namespace Artemis.Engine
             return Subgroups[nameParts[0]].GetAsset(newParts);
         }
 
-        /* Tentative
+        /// <summary>
+        /// Remove a subgroup with the given full asset URI (without the
+        /// parent group name).
+        /// </summary>
+        /// <param name="fullName"></param>
+        public void RemoveSubgroup(string fullName)
+        {
+            RemoveSubgroup(fullName.Split(AssetLoader.ASSET_URI_SEPARATOR));
+        }
+
+        private void RemoveSubgroup(string[] nameParts)
+        {
+            if (nameParts.Length == 1)
+            {
+                var name = nameParts[0];
+
+                Subgroups[name].Dispose();
+
+                Subgroups.Remove(name);
+            }
+            var newParts = nameParts.Skip(1).ToArray();
+            Subgroups[nameParts[0]].RemoveSubgroup(newParts);
+        }
 
         private bool disposed = false;
 
+        ~AssetGroup()
+        {
+            Dispose();
+        }
+
+        /// <summary>
+        /// Clean up and dispose this AssetGroup object.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -161,22 +195,40 @@ namespace Artemis.Engine
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Clean up and dispose this AssetGroup object.
+        /// </summary>
+        /// <param name="disposing"></param>
         private void Dispose(bool disposing)
         {
             if (!disposed)
             {
                 if (disposing)
                 {
-                    // Release managed objects
-                    // ...
+                    // Recursively dispose subgroups.
+                    foreach (var group in Subgroups)
+                    {
+                        group.Value.Dispose(disposing);
+                    }
+
+                    // Dispose managed disposable asset types.
+                    var IDisposableType = typeof(IDisposable);
+                    foreach (var asset in Assets)
+                    {
+                        if (IDisposableType.IsAssignableFrom(asset.Value.GetType()))
+                        {
+                            var disposableAsset = (IDisposable)asset.Value;
+                            disposableAsset.Dispose();
+                        }
+                    }
                 }
 
-                // Release native objects
-                // ...
+                // Dispose native resources.
+                Subgroups = null;
+                Assets = null;
+
                 disposed = true;
             }
         }
-         
-        */
     }
 }
