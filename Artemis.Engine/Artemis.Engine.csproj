@@ -59,6 +59,7 @@
     <Compile Include="Input\KeyboardInput.cs" />
     <Compile Include="Input\MouseButton.cs" />
     <Compile Include="Input\MouseInput.cs" />
+    <Compile Include="TEST_Multiform.cs" />
     <Compile Include="MultiformManager.cs" />
     <Compile Include="MultiformManagerException.cs" />
     <Compile Include="MultiformPostUpdateEvent.cs" />

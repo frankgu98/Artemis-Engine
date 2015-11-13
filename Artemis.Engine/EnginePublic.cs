@@ -83,7 +83,7 @@ namespace Artemis.Engine
                                 , bool borderTogglable          = GameProperties.DEFAULT_BORDER_TOGGLABLE
                                 , bool vsync                    = GameProperties.DEFAULT_VSYNC
                                 , Color? bgColour               = null
-                                , string? windowTitle           = null )
+                                , string windowTitle            = null )
         {
             var properties = new GameProperties();
 
@@ -93,9 +93,9 @@ namespace Artemis.Engine
             properties.BackgroundColour = bgColour.HasValue ?
                 bgColour.Value : GameProperties.DEFAULT_BG_COLOUR;
 
-            if (windowTitle.HasValue)
+            if (windowTitle != null)
             {
-                properties.WindowTitle = windowTitle.Value;
+                properties.WindowTitle = windowTitle;
             }
 
             properties.Fullscreen = fullscreen;
