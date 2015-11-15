@@ -21,11 +21,11 @@ namespace Artemis.ApprovalTests
         /// </summary>
         static void Main()
         {
-            Engine.Engine.Setup(
+            ArtemisEngine.Setup(
                 new Resolution(800, 600), false, false, true, 
                 false, true, false, true, Color.Black, "Test1");
 
-            Engine.Engine.Begin();
+            ArtemisEngine.Begin();
         }
     }
 #endif

@@ -8,12 +8,12 @@ namespace Artemis.Engine
     /// <summary>
     /// The part of the Engine object which is publically available to users.
     /// </summary>
-    public sealed partial class Engine
+    public sealed partial class ArtemisEngine
     {
         /// <summary>
         /// The singleton instance of Engine.
         /// </summary>
-        private static Engine Instance;
+        private static ArtemisEngine Instance;
 
         /// <summary>
         /// Whether or not Engine.Setup has been called.
@@ -69,9 +69,7 @@ namespace Artemis.Engine
                 throw new EngineSetupException("Engine.Setup called multiple times.");
             }
 
-            Instance = new Engine(new GameSetupReader(name).Read());
-
-            // Instance.Initialize();
+            Instance = new ArtemisEngine(new GameSetupReader(name).Read());
         }
 
         /// <summary>
@@ -109,9 +107,7 @@ namespace Artemis.Engine
             properties.BorderTogglable = borderTogglable;
             properties.VSync = vsync;
 
-            Instance = new Engine(properties);
-
-            Instance.Initialize();
+            Instance = new ArtemisEngine(properties);
         }
 
         /// <summary>
@@ -153,10 +149,7 @@ namespace Artemis.Engine
                     "Must call Engine.Setup before call to Engine.Begin.");
             }
 
-            using (Instance)
-            {
-                Instance.Run();
-            }
+            Instance.Run();
         }
     }
 }

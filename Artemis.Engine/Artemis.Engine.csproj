@@ -48,6 +48,7 @@
     <Compile Include="BuiltinAssetImporter.cs" />
     <Compile Include="AbstractAssetImporter.cs" />
     <Compile Include="DynamicAttributeContainer.cs" />
+    <Compile Include="GameKernel.cs" />
     <Compile Include="GlobalTimer.cs" />
     <Compile Include="GlobalUpdater.cs" />
     <Compile Include="AssetLoader.cs" />
