@@ -45,6 +45,7 @@
     <Compile Include="ArtemisObject.cs" />
     <Compile Include="AssetImporterRegistrationException.cs" />
     <Compile Include="AssetImportException.cs" />
+    <Compile Include="AssetLoadException.cs" />
     <Compile Include="BuiltinAssetImporter.cs" />
     <Compile Include="AbstractAssetImporter.cs" />
     <Compile Include="DynamicAttributeContainer.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Input\KeyboardInput.cs" />
     <Compile Include="Input\MouseButton.cs" />
     <Compile Include="Input\MouseInput.cs" />
+    <Compile Include="LazyAsset.cs" />
     <Compile Include="TEST_Multiform.cs" />
     <Compile Include="MultiformManager.cs" />
     <Compile Include="MultiformManagerException.cs" />
