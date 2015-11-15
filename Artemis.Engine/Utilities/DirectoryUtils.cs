@@ -1,46 +1,62 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Artemis.Engine.Utilities
 {
     public static class DirectoryUtils
     {
 
-        #region Code by Stackoverflow Users "Dave" and "Marc Gravell"
-        // References: http://stackoverflow.com/a/340454
-        //             http://stackoverflow.com/a/703292
-    
-        /// <summary>
-        /// Creates a relative path from one file or folder to another.
-        /// </summary>
-        public static String MakeRelativePath(String rootDirectory, String childDirectory)
+        public static String MakeRelativePath(string rootDirectory, string childDirectory)
         {
             if (String.IsNullOrEmpty(rootDirectory))
             {
                 throw new ArgumentNullException("rootDirectory");
             }
-
             if (String.IsNullOrEmpty(childDirectory))
             {
                 throw new ArgumentNullException("childDirectory");
             }
-
-            Uri rootUri = new Uri(rootDirectory);
-
-            // Folders must end in a slash
-            if (!childDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            if (!IsChildDirectoryOf(rootDirectory, childDirectory))
             {
-                childDirectory += Path.DirectorySeparatorChar;
+                throw new ArgumentException(
+                    String.Format("`childDirectory` must be child of `rootDirectory`. " + 
+                                  "'{0}' is not a child directory of '{1}'.", childDirectory, rootDirectory));
             }
-            Uri childUri = new Uri(childDirectory);
+            var parentComponents = rootDirectory.Split(Path.DirectorySeparatorChar);
+            var childComponents  = childDirectory.Split(Path.DirectorySeparatorChar);
 
-            return Uri.UnescapeDataString(
-                childUri.MakeRelativeUri(rootUri)
-                        .ToString()
-                        .Replace('/', Path.DirectorySeparatorChar));
+            Debug.Assert(parentComponents.Length < childComponents.Length);
+
+            int i = 0;
+            var maxLen = parentComponents.Length;
+            while (i < maxLen && parentComponents[i] == childComponents[i]) i++;
+
+            return String.Join(Path.DirectorySeparatorChar.ToString(), childComponents.Skip(i));
         }
 
-        #endregion
+        /// <summary>
+        /// Determine if a given directory is a child directory of another.
+        /// </summary>
+        /// <param name="parentDirectory"></param>
+        /// <param name="childDirectory"></param>
+        /// <returns></returns>
+        public static bool IsChildDirectoryOf(string parentDirectory, string childDirectory)
+        {
+            var childInfo  = new DirectoryInfo(childDirectory);
+            var parentInfo = new DirectoryInfo(parentDirectory);
+
+            while (childInfo.Parent != null)
+            {
+                if (childInfo.Parent.FullName == parentInfo.FullName)
+                {
+                    return true;
+                }
+                childInfo = childInfo.Parent;
+            }
+            return false;
+        }
 
     }
 }

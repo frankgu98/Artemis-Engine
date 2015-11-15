@@ -62,20 +62,16 @@ namespace Artemis.Engine
         /// Setup the game's properties using the setup file with the supplied name.
         /// </summary>
         /// <param name="name"></param>
-        public static void Setup(string name)
+        public static void Setup(string name, Action initializer)
         {
-            if (SetupCalled)
-            {
-                throw new EngineSetupException("Engine.Setup called multiple times.");
-            }
-
-            Instance = new ArtemisEngine(new GameSetupReader(name).Read());
+            Setup(new GameSetupReader(name).Read(), initializer);
         }
 
         /// <summary>
         /// Setup the game's properties using the given setup parameters.
         /// </summary>
-        public static void Setup( Resolution? baseResolution    = null
+        public static void Setup( Action initializer
+                                , Resolution? baseResolution    = null
                                 , bool fullscreen               = GameProperties.DEFAULT_FULLSCREEN
                                 , bool fullscreenTogglable      = GameProperties.DEFAULT_FULLSCREEN_TOGGLABLE
                                 , bool mouseVisible             = GameProperties.DEFAULT_MOUSE_VISIBLE
@@ -84,7 +80,7 @@ namespace Artemis.Engine
                                 , bool borderTogglable          = GameProperties.DEFAULT_BORDER_TOGGLABLE
                                 , bool vsync                    = GameProperties.DEFAULT_VSYNC
                                 , Color? bgColour               = null
-                                , string windowTitle            = null )
+                                , string windowTitle            = null)
         {
             var properties = new GameProperties();
 
@@ -107,7 +103,17 @@ namespace Artemis.Engine
             properties.BorderTogglable = borderTogglable;
             properties.VSync = vsync;
 
-            Instance = new ArtemisEngine(properties);
+            Setup(properties, initializer);
+        }
+
+        internal static void Setup(GameProperties properties, Action initializer)
+        {
+            if (SetupCalled)
+            {
+                throw new EngineSetupException("Engine.Setup called multiple times.");
+            }
+            Instance = new ArtemisEngine(properties, initializer);
+            Instance.Run();
         }
 
         /// <summary>
@@ -130,26 +136,17 @@ namespace Artemis.Engine
         /// <param name="multiform"></param>
         public static void StartWith(Type multiform)
         {
+            StartWith(MultiformManager.GetMultiformName(typeof(Multiform)));
+        }
+
+        public static void StartWith(string multiformName)
+        {
             if (!SetupCalled)
             {
                 throw new EngineSetupException(
                     "Must call Engine.Setup before call to Engine.StartWith.");
             }
-            MultiformManager.Construct(multiform);
-        }
-
-        /// <summary>
-        /// Run the game.
-        /// </summary>
-        public static void Begin()
-        {
-            if (!SetupCalled)
-            {
-                throw new EngineSetupException(
-                    "Must call Engine.Setup before call to Engine.Begin.");
-            }
-
-            Instance.Run();
+            MultiformManager.Construct(multiformName);
         }
     }
 }

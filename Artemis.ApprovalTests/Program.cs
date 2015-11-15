@@ -1,11 +1,7 @@
 ﻿#region Using Statements
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Artemis.Engine;
-using Artemis.Engine.Input;
-using Artemis.Engine.Utilities;
-using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 #endregion
 
 namespace Artemis.ApprovalTests
@@ -19,14 +15,42 @@ namespace Artemis.ApprovalTests
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        [STAThread]
         static void Main()
         {
-            ArtemisEngine.Setup(
-                new Resolution(800, 600), false, false, true, 
-                false, true, false, true, Color.Black, "Test1");
+            ArtemisEngine.Setup("gamesetup.xml", Initialize);
+        }
 
-            ArtemisEngine.Begin();
+        static void Initialize()
+        {
+            var image = AssetLoader.Load<Texture2D>("text-image1");
+
+            ArtemisEngine.RegisterMultiforms(
+                typeof(MainMultiform1),
+                typeof(MainMultiform2));
+            ArtemisEngine.StartWith("Main2");            
         }
     }
+
+    [NamedMultiform("Main1")]
+    public class MainMultiform1 : Multiform
+    {
+        public override void Construct()
+        {
+            SetUpdater(() => { Console.WriteLine("Updating 1."); });
+            SetRenderer(() => { Console.WriteLine("Rendering 1."); });
+        }
+    }
+
+    [NamedMultiform("Main2")]
+    public class MainMultiform2 : Multiform
+    {
+        public override void Construct()
+        {
+            SetUpdater(() => { Console.WriteLine("Updating 2."); });
+            SetRenderer(() => { Console.WriteLine("Rendering 2."); });
+        }
+    }
+
 #endif
 }

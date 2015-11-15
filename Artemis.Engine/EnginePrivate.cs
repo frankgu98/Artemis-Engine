@@ -19,9 +19,17 @@ namespace Artemis.Engine
 
         private GameKernel gameKernel;
 
-        private ArtemisEngine(GameProperties properties) : base()
+        private Action initializer;
+
+        internal bool Initialized { get; private set; }
+
+        private ArtemisEngine(GameProperties properties, Action initializer) : base()
         {
+            this.initializer = initializer;
+            Initialized = false;
+
             _GameProperties = properties;
+            gameKernel = new GameKernel(this);
 
             _MultiformManager = new MultiformManager();
             _GameTimer        = new GlobalTimer();
@@ -29,8 +37,6 @@ namespace Artemis.Engine
 
             _Mouse            = new MouseInput();
             _Keyboard         = new KeyboardInput();
-
-            gameKernel = new GameKernel(this);
         }
 
         internal void InitializeRenderPipeline(SpriteBatch sb, GraphicsDevice gd, GraphicsDeviceManager gdm)
@@ -38,7 +44,13 @@ namespace Artemis.Engine
             _RenderPipeline = new RenderPipeline(sb, gd, gdm);
         }
 
-        internal void Run()
+        internal void Initialize()
+        {
+            initializer();
+            Initialized = true;
+        }
+
+        private void Run()
         {
             using (gameKernel)
             {
