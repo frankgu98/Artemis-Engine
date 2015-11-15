@@ -50,9 +50,14 @@ namespace Artemis.Engine
                 if (active.ContainsKey(name))
                 {
                     throw new MultiformManagerException(
-                        String.Format("Multiform with name {0} has already been constructed.", name));
+                        String.Format("Multiform with name '{0}' has already been constructed.", name));
                 }
 
+                if (!registered.ContainsKey(name))
+                {
+                    throw new MultiformManagerException(
+                        String.Format("No multiform with name '{0}' exists.", name));
+                }
                 var multiform = registered[name];
                 multiform.Construct();
                 active.Add(name, multiform);
@@ -73,7 +78,7 @@ namespace Artemis.Engine
                 if (!active.ContainsKey(name))
                 {
                     throw new MultiformManagerException(
-                        String.Format("Multiform with name {0} is not constructed.", name));
+                        String.Format("Multiform with name '{0}' has not been constructed.", name));
                 }
                 active.Remove(name);
             }

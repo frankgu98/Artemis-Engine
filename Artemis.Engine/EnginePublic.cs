@@ -8,12 +8,12 @@ namespace Artemis.Engine
     /// <summary>
     /// The part of the Engine object which is publically available to users.
     /// </summary>
-    public sealed partial class Engine
+    public sealed partial class ArtemisEngine
     {
         /// <summary>
         /// The singleton instance of Engine.
         /// </summary>
-        private static Engine Instance;
+        private static ArtemisEngine Instance;
 
         /// <summary>
         /// Whether or not Engine.Setup has been called.
@@ -62,19 +62,16 @@ namespace Artemis.Engine
         /// Setup the game's properties using the setup file with the supplied name.
         /// </summary>
         /// <param name="name"></param>
-        public static void Setup(string name)
+        public static void Setup(string name, Action initializer)
         {
-            if (SetupCalled)
-            {
-                throw new EngineSetupException("Engine.Setup called multiple times.");
-            }
-            Instance = new Engine(new GameSetupReader(name).Read());
+            Setup(new GameSetupReader(name).Read(), initializer);
         }
 
         /// <summary>
         /// Setup the game's properties using the given setup parameters.
         /// </summary>
-        public static void Setup( Resolution? baseResolution    = null
+        public static void Setup( Action initializer
+                                , Resolution? baseResolution    = null
                                 , bool fullscreen               = GameProperties.DEFAULT_FULLSCREEN
                                 , bool fullscreenTogglable      = GameProperties.DEFAULT_FULLSCREEN_TOGGLABLE
                                 , bool mouseVisible             = GameProperties.DEFAULT_MOUSE_VISIBLE
@@ -83,7 +80,7 @@ namespace Artemis.Engine
                                 , bool borderTogglable          = GameProperties.DEFAULT_BORDER_TOGGLABLE
                                 , bool vsync                    = GameProperties.DEFAULT_VSYNC
                                 , Color? bgColour               = null
-                                , string? windowTitle           = null )
+                                , string windowTitle            = null)
         {
             var properties = new GameProperties();
 
@@ -93,9 +90,9 @@ namespace Artemis.Engine
             properties.BackgroundColour = bgColour.HasValue ?
                 bgColour.Value : GameProperties.DEFAULT_BG_COLOUR;
 
-            if (windowTitle.HasValue)
+            if (windowTitle != null)
             {
-                properties.WindowTitle = windowTitle.Value;
+                properties.WindowTitle = windowTitle;
             }
 
             properties.Fullscreen = fullscreen;
@@ -106,7 +103,17 @@ namespace Artemis.Engine
             properties.BorderTogglable = borderTogglable;
             properties.VSync = vsync;
 
-            Instance = new Engine(properties);
+            Setup(properties, initializer);
+        }
+
+        internal static void Setup(GameProperties properties, Action initializer)
+        {
+            if (SetupCalled)
+            {
+                throw new EngineSetupException("Engine.Setup called multiple times.");
+            }
+            Instance = new ArtemisEngine(properties, initializer);
+            Instance.Run();
         }
 
         /// <summary>
@@ -129,29 +136,17 @@ namespace Artemis.Engine
         /// <param name="multiform"></param>
         public static void StartWith(Type multiform)
         {
+            StartWith(MultiformManager.GetMultiformName(typeof(Multiform)));
+        }
+
+        public static void StartWith(string multiformName)
+        {
             if (!SetupCalled)
             {
                 throw new EngineSetupException(
                     "Must call Engine.Setup before call to Engine.StartWith.");
             }
-            MultiformManager.Construct(multiform);
-        }
-
-        /// <summary>
-        /// Run the game.
-        /// </summary>
-        public static void Begin()
-        {
-            if (!SetupCalled)
-            {
-                throw new EngineSetupException(
-                    "Must call Engine.Setup before call to Engine.Begin.");
-            }
-
-            using (Instance)
-            {
-                Instance.Run();
-            }
+            MultiformManager.Construct(multiformName);
         }
     }
 }

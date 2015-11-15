@@ -24,6 +24,30 @@ namespace Artemis.Engine
         internal const char ASSET_URI_SEPARATOR = '.';
 
         /// <summary>
+        /// The array of all recognized image file extensions.
+        /// </summary>
+        public static readonly string[] RECOGNIZED_IMAGE_FILE_EXTENSIONS = 
+        {
+            ".jpg",
+            ".bmp",
+            ".jpeg",
+            ".png",
+            ".gif",
+#if !ANDROID
+            ".pict",
+            ".tga"
+        };
+#endif
+
+        /// <summary>
+        /// The array of all recognized spritefont file extensions.
+        /// </summary>
+        public static readonly string[] RECOGNIZED_SPRITEFONT_FILE_EXTENSIONS = 
+        {
+            ".spritefont"
+        };
+
+        /// <summary>
         /// The global ContentManager.
         /// </summary>
     	internal static ContentManager Content;
@@ -58,17 +82,11 @@ namespace Artemis.Engine
             var texture2DImporter  = new Texture2DAssetImporter();
             var spritefontImporter = new SpriteFontAssetImporter();
 
-            /* For Android
-            RegisterAssetImporter<Texture2D>(
-                texture2DImporter, "jpg", "bmp", "jpeg", "png", "gif");
-            */
-
-            RegisterAssetImporter<Texture2D>(
-                texture2DImporter, "jpg", "bmp", "jpeg", "png", "gif", "pict", "tga");
-
-            RegisterAssetImporter<SpriteFont>(
-                spritefontImporter, "spritefont");
+            RegisterAssetImporter<Texture2D>( texture2DImporter,  RECOGNIZED_IMAGE_FILE_EXTENSIONS);
+            RegisterAssetImporter<SpriteFont>(spritefontImporter, RECOGNIZED_SPRITEFONT_FILE_EXTENSIONS);
         }
+
+        private static string _contentFolderName;
 
         /// <summary>
         /// The full name of the content folder.
@@ -77,12 +95,16 @@ namespace Artemis.Engine
         {
             get
             {
-                // Check this to make sure it's not stupid. (i.e. make sure it doesn't cause
-                // any strange errors in different contexts)
+                if (_contentFolderName == null)
+                {
+                    // Check this to make sure it's not stupid. (i.e. make sure it doesn't cause
+                    // any strange errors in different contexts)
+                    _contentFolderName = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        Content.RootDirectory);
+                }
 
-                return Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    Content.RootDirectory);
+                return _contentFolderName;
             }
         }
 
@@ -135,15 +157,16 @@ namespace Artemis.Engine
         public static void RegisterAssetImporter(
             AbstractAssetImporter assetImporter, params string[] assetFileExtensions)
         {
-            foreach (var extension in assetFileExtensions)
+            foreach (var ext in assetFileExtensions)
             {
-                if (RegisteredAssetImportersByExtension.ContainsKey(extension))
+                var truncated = ext[0] == '.' ? ext.Substring(1) : ext;
+                if (RegisteredAssetImportersByExtension.ContainsKey(truncated))
                 {
                     throw new AssetImporterRegistrationException(
                         String.Format("An asset importer has already been " + 
-                                      "associated with the extension '.{0}'", extension));
+                                      "associated with the extension '.{0}'", truncated));
                 }
-                RegisteredAssetImportersByExtension.Add(extension, assetImporter);
+                RegisteredAssetImportersByExtension.Add(truncated, assetImporter);
             }
         }
 
