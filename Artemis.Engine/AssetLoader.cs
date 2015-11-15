@@ -208,21 +208,25 @@ namespace Artemis.Engine
         /// <returns></returns>
         public static object LoadAssetUsingExtension(string name)
         {
-            var extension = Path.GetExtension(name);
+            var extension = Path.GetExtension(name).Substring(1);
             if (string.IsNullOrEmpty(extension))
             {
                 throw new ArgumentException(
                     String.Format("Cannot load asset '{0}'.", name)
                     );
             }
-            
-            if (!RegisteredAssetImportersByExtension.ContainsKey(name))
+            if (extension == "xnb")
+            {
+                // We can't determine the type of an xnb file (not nicely at least).
+                return new LazyAsset(Path.GetFileNameWithoutExtension(name));
+            }
+            if (!RegisteredAssetImportersByExtension.ContainsKey(extension))
             {
                 throw new AssetImportException(
-                    String.Format("No asset importer for asset with extension '.{0}'.", name)
+                    String.Format("No asset importer for asset with extension '.{0}'.", extension)
                     );
             }
-            var importer = RegisteredAssetImportersByExtension[name];
+            var importer = RegisteredAssetImportersByExtension[extension];
             return importer.ImportFrom(name);
         }
 

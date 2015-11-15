@@ -89,7 +89,7 @@ namespace Artemis.Engine
 
             foreach (var fileName in files)
             {
-                var assetName = Path.GetFileName(
+                var assetName = Path.GetFileNameWithoutExtension(
                     DirectoryUtils.MakeRelativePath(
                         AssetLoader.ContentFolderName, fileName));
 
@@ -141,7 +141,12 @@ namespace Artemis.Engine
         /// <returns></returns>
         public T GetAsset<T>(string fullName)
         {
-            return (T)GetAsset(fullName.Split(AssetLoader.ASSET_URI_SEPARATOR));
+            var asset = GetAsset(fullName.Split(AssetLoader.ASSET_URI_SEPARATOR));
+            if (asset is LazyAsset)
+            {
+                return ((LazyAsset)asset).Load<T>();
+            }
+            return (T)asset;
         }
 
         private object GetAsset(string[] nameParts)

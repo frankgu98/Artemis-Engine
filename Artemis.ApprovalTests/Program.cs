@@ -2,6 +2,7 @@
 using Artemis.Engine;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 #endregion
 
 namespace Artemis.ApprovalTests
@@ -25,10 +26,23 @@ namespace Artemis.ApprovalTests
         {
             var image = AssetLoader.Load<Texture2D>("text-image1");
 
+            AssetLoader.RegisterAssetImporter<string>(new TestAssetImporter(), ".test");
+
+            AssetLoader.PrepareAssetGroup("test-group", SearchOption.AllDirectories);
+            var image2 = AssetLoader.Load<Texture2D>("test-group.test-image1");
+
+            var group  = AssetLoader.GetGroup("test-group");
+            var image3 = group.GetAsset<Texture2D>("test-image1");
+
+            var text = group.GetAsset<string>("test-asset");
+            Console.WriteLine(text);
+
             ArtemisEngine.RegisterMultiforms(
                 typeof(MainMultiform1),
                 typeof(MainMultiform2));
-            ArtemisEngine.StartWith("Main2");            
+            ArtemisEngine.StartWith("Main2");
+
+            AssetLoader.UnloadAssetGroup("test-group");
         }
     }
 
@@ -49,6 +63,19 @@ namespace Artemis.ApprovalTests
         {
             SetUpdater(() => { Console.WriteLine("Updating 2."); });
             SetRenderer(() => { Console.WriteLine("Rendering 2."); });
+        }
+    }
+
+    public class TestAssetImporter : AbstractAssetImporter
+    {
+        public override object ImportFrom(string filePath)
+        {
+            string text;
+            using (var file = new StreamReader(filePath))
+            {
+                text = file.ReadToEnd();
+            }
+            return text;
         }
     }
 
