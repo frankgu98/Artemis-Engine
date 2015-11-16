@@ -11,31 +11,6 @@ namespace Artemis.Engine
     public sealed class MultiformManager
     {
 
-        /// <summary>
-        /// Return the name of a multiform by it's type.
-        /// </summary>
-        public static string GetMultiformName(Type multiformType)
-        {
-            // If the class has a NamedMultiform attribute applied to it, we use
-            // the supplied name. Otherwise, the name is simply the name of the class.
-            string name;
-            var nameAttrs = Reflection.GetAttributes<NamedMultiform>(multiformType);
-            if (nameAttrs.Count == 0)
-            {
-                name = multiformType.Name;
-            }
-            else if (nameAttrs.Count == 1)
-            {
-                name = nameAttrs[0].Name;
-            }
-            else
-            {
-                throw new MultiformRegistrationException(
-                    "Multiforms cannot have multiple NamedMultiformAttributes.");
-            }
-            return name;
-        }
-
         private class ConstructEvent : MultiformPostUpdateEvent
         {
             string name;
@@ -128,9 +103,25 @@ namespace Artemis.Engine
         /// </summary>
         /// <param name="name"></param>
         /// <param name="instance"></param>
-        internal void RegisterMultiform(string name, Multiform instance)
+        internal void RegisterMultiform(Multiform instance)
         {
-            RegisteredMultiforms.Add(name, instance);
+            RegisteredMultiforms.Add(instance.Name, instance);
+        }
+
+        /// <summary>
+        /// Register a multiform with the given type.
+        /// </summary>
+        /// <param name="multiformType"></param>
+        internal void RegisterMultiform(Type multiformType)
+        {
+            if (!typeof(Multiform).IsAssignableFrom(multiformType))
+            {
+                throw new MultiformRegistrationException(
+                    String.Format(
+                        "The given multiform type {0} does not inherit from Multiform.", multiformType)
+                        );
+            }
+            RegisterMultiform((Multiform)Activator.CreateInstance(multiformType));
         }
 
         private void ApplyOrQueueEvent(MultiformPostUpdateEvent evt)
@@ -151,30 +142,12 @@ namespace Artemis.Engine
         }
 
         /// <summary>
-        /// Construct the multiform of the given type.
-        /// </summary>
-        /// <param name="multiformType"></param>
-        public void Construct(Type multiformType)
-        {
-            Construct(GetMultiformName(multiformType));
-        }
-
-        /// <summary>
         /// Construct the multiform with the given name.
         /// </summary>
         /// <param name="name"></param>
         public void Construct(string name)
         {
             ApplyOrQueueEvent(new ConstructEvent(name));
-        }
-
-        /// <summary>
-        /// Close the multiform of the given type.
-        /// </summary>
-        /// <param name="multiformType"></param>
-        public void Close(Type multiformType)
-        {
-            Close(GetMultiformName(multiformType));
         }
 
         /// <summary>

@@ -95,25 +95,28 @@ namespace Artemis.Engine
         /// Register Multiform classes to the engine's MultiformManager.
         /// </summary>
         /// <param name="multiforms"></param>
-        private void _RegisterMultiforms(Type[] multiforms)
+        private void _RegisterMultiforms(object[] multiforms)
         {
-            foreach (var multiformType in multiforms)
+            var i = 0;
+            foreach (var multiform in multiforms)
             {
-                // Get the multiform's name.
-                string name = MultiformManager.GetMultiformName(multiformType);
-
-                // Check if it's actually a multiform subtype.
-                if (!multiformType.IsSubclassOf(typeof(Multiform)))
+                if (multiform is Multiform)
+                {
+                    MultiformManager.RegisterMultiform((Multiform)multiform);
+                }
+                else if (multiform is Type)
+                {
+                    MultiformManager.RegisterMultiform((Type)multiform);
+                }
+                else
                 {
                     throw new MultiformRegistrationException(
                         String.Format(
-                            "Multiform with name {0} is not a subclass of `Multiform`.",
-                            name)
-                        );
+                            "When registering multiforms, the given objects must either be a multiform " +
+                            "instance or a multiform type. The object at index {0} was neither (received {1}).",
+                            i, multiform));
                 }
-
-                var multiformInstance = (Multiform)Activator.CreateInstance(multiformType);
-                MultiformManager.RegisterMultiform(name, multiformInstance);
+                i++;
             }
         }
     }
