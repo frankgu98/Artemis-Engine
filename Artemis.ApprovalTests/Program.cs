@@ -38,17 +38,19 @@ namespace Artemis.ApprovalTests
             Console.WriteLine(text);
 
             ArtemisEngine.RegisterMultiforms(
-                typeof(MainMultiform1),
-                typeof(MainMultiform2));
+                new MainMultiform1("Main1"),
+                new MainMultiform2("Main2"));
             ArtemisEngine.StartWith("Main2");
 
             AssetLoader.UnloadAssetGroup("test-group");
         }
     }
 
-    [NamedMultiform("Main1")]
     public class MainMultiform1 : Multiform
     {
+        public MainMultiform1() : base() { }
+        public MainMultiform1(string name) : base(name) { }
+
         public override void Construct()
         {
             SetUpdater(() => { Console.WriteLine("Updating 1."); });
@@ -56,9 +58,11 @@ namespace Artemis.ApprovalTests
         }
     }
 
-    [NamedMultiform("Main2")]
     public class MainMultiform2 : Multiform
     {
+        public MainMultiform2() : base() { }
+        public MainMultiform2(string name) : base(name) { }
+
         public override void Construct()
         {
             SetUpdater(() => { Console.WriteLine("Updating 2."); });

@@ -120,7 +120,7 @@ namespace Artemis.Engine
         /// Register multiforms to the engine.
         /// </summary>
         /// <param name="multiforms"></param>
-        public static void RegisterMultiforms(params Type[] multiforms)
+        public static void RegisterMultiforms(params object[] multiforms)
         {
             if (!SetupCalled)
             {
@@ -134,11 +134,6 @@ namespace Artemis.Engine
         /// Indicate what multiform to construct upon game startup.
         /// </summary>
         /// <param name="multiform"></param>
-        public static void StartWith(Type multiform)
-        {
-            StartWith(MultiformManager.GetMultiformName(typeof(Multiform)));
-        }
-
         public static void StartWith(string multiformName)
         {
             if (!SetupCalled)

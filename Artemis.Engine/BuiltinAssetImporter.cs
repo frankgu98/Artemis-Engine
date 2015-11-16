@@ -1,6 +1,4 @@
 ﻿using Artemis.Engine.Utilities;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.IO;
 
 namespace Artemis.Engine
@@ -14,10 +12,9 @@ namespace Artemis.Engine
         public override object ImportFrom(string filePath)
         {
             var cfName = AssetLoader.ContentFolderName;
-            var fName = DirectoryUtils.MakeRelativePath(
-                    cfName, Path.Combine(cfName, filePath));
-            var val = AssetLoader.Content.Load<T>("test-image1");
-            return val;
+            return AssetLoader.Content.Load<T>(
+                DirectoryUtils.MakeRelativePath(
+                    cfName, Path.Combine(cfName, filePath)));
         }
     }
 }
