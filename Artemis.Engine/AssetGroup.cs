@@ -1,8 +1,8 @@
 ﻿using Artemis.Engine.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System;
 
 namespace Artemis.Engine
 {
